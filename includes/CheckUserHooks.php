@@ -4,6 +4,13 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Auth\AuthenticationResponse;
 
 class CheckUserHooks {
+
+	/**
+	 * The maximum number of bytes that fit in CheckUser's text fields
+	 * (cuc_agent,cuc_actiontext,cuc_comment,cuc_xff)
+	 */
+	private const TEXT_FIELD_LENGTH = 255;
+
 	/**
 	 * Hook function for RecentChange_save
 	 * Saves user data into the cu_changes table
@@ -55,7 +62,18 @@ class CheckUserHooks {
 			$actionText = '';
 		}
 
-		$dbw = wfGetDB( DB_MASTER );
+		$comment = $rc->getAttribute( 'rc_comment' );
+
+		$services = MediaWikiServices::getInstance();
+		$contLang = $services->getContentLanguage();
+
+		// (T199323) Truncate text fields prior to database insertion
+		// Attempting to insert too long text will cause an error in MariaDB/MySQL strict mode
+		$actionText = $contLang->truncateForDatabase( $actionText, self::TEXT_FIELD_LENGTH );
+		$agent = $contLang->truncateForDatabase( $agent, self::TEXT_FIELD_LENGTH );
+		$xff = $contLang->truncateForDatabase( $xff, self::TEXT_FIELD_LENGTH );
+		$comment = $contLang->truncateForDatabase( $comment, self::TEXT_FIELD_LENGTH );
+
 		$rcRow = [
 			'cuc_namespace'  => $attribs['rc_namespace'],
 			'cuc_title'      => $attribs['rc_title'],
@@ -63,7 +81,7 @@ class CheckUserHooks {
 			'cuc_user'       => $attribs['rc_user'],
 			'cuc_user_text'  => $attribs['rc_user_text'],
 			'cuc_actiontext' => $actionText,
-			'cuc_comment'    => $rc->getAttribute( 'rc_comment' ),
+			'cuc_comment'    => $comment,
 			'cuc_this_oldid' => $attribs['rc_this_oldid'],
 			'cuc_last_oldid' => $attribs['rc_last_oldid'],
 			'cuc_type'       => $attribs['rc_type'],
@@ -80,6 +98,8 @@ class CheckUserHooks {
 		}
 
 		Hooks::run( 'CheckUserInsertForRecentChange', [ $rc, &$rcRow ] );
+
+		$dbw = $services->getDBLoadBalancer()->getConnectionRef( DB_MASTER );
 		$dbw->insert( 'cu_changes', $rcRow, __METHOD__ );
 
 		return true;
@@ -102,15 +122,27 @@ class CheckUserHooks {
 		list( $xff_ip, $isSquidOnly ) = self::getClientIPfromXFF( $xff );
 		// Get agent
 		$agent = $wgRequest->getHeader( 'User-Agent' );
-		$dbw = wfGetDB( DB_MASTER );
+
+		$actionText = wfMessage( 'checkuser-reset-action', $account->getName() )
+			->inContentLanguage()->text();
+
+		$services = MediaWikiServices::getInstance();
+		$contLang = $services->getContentLanguage();
+
+		// (T199323) Truncate comment fields prior to database insertion
+		// Attempting to insert too long text will cause an error in MariaDB/MySQL strict mode
+		$actionText = $contLang->truncateForDatabase( $actionText, self::TEXT_FIELD_LENGTH );
+		$agent = $contLang->truncateForDatabase( $agent, self::TEXT_FIELD_LENGTH );
+		$xff = $contLang->truncateForDatabase( $xff, self::TEXT_FIELD_LENGTH );
+
+		$dbw = $services->getDBLoadBalancer()->getConnectionRef( DB_MASTER );
 		$rcRow = [
 			'cuc_namespace'  => NS_USER,
 			'cuc_title'      => '',
 			'cuc_minor'      => 0,
 			'cuc_user'       => $user->getId(),
 			'cuc_user_text'  => $user->getName(),
-			'cuc_actiontext' => wfMessage( 'checkuser-reset-action', $account->getName() )
-				->inContentLanguage()->text(),
+			'cuc_actiontext' => $actionText,
 			'cuc_comment'    => '',
 			'cuc_this_oldid' => 0,
 			'cuc_last_oldid' => 0,
@@ -160,15 +192,27 @@ class CheckUserHooks {
 		// Get agent
 		$agent = $wgRequest->getHeader( 'User-Agent' );
 
-		$dbr = wfGetDB( DB_REPLICA );
+		$actionText = wfMessage( 'checkuser-email-action', $hash )->inContentLanguage()->text();
+
+		$services = MediaWikiServices::getInstance();
+		$contLang = $services->getContentLanguage();
+
+		// (T199323) Truncate text fields prior to database insertion
+		// Attempting to insert too long text will cause an error in MariaDB/MySQL strict mode
+		$actionText = $contLang->truncateForDatabase( $actionText, self::TEXT_FIELD_LENGTH );
+		$agent = $contLang->truncateForDatabase( $agent, self::TEXT_FIELD_LENGTH );
+		$xff = $contLang->truncateForDatabase( $xff, self::TEXT_FIELD_LENGTH );
+
+		$lb = $services->getDBLoadBalancer();
+		$dbr = $lb->getConnectionRef( DB_REPLICA );
+
 		$rcRow = [
 			'cuc_namespace'  => NS_USER,
 			'cuc_title'      => '',
 			'cuc_minor'      => 0,
 			'cuc_user'       => $userFrom->getId(),
 			'cuc_user_text'  => $userFrom->getName(),
-			'cuc_actiontext' =>
-				wfMessage( 'checkuser-email-action', $hash )->inContentLanguage()->text(),
+			'cuc_actiontext' => $actionText,
 			'cuc_comment'    => '',
 			'cuc_this_oldid' => 0,
 			'cuc_last_oldid' => 0,
@@ -187,8 +231,8 @@ class CheckUserHooks {
 		}
 
 		$fname = __METHOD__;
-		DeferredUpdates::addCallableUpdate( function () use ( $rcRow, $fname ) {
-			$dbw = wfGetDB( DB_MASTER );
+		DeferredUpdates::addCallableUpdate( function () use ( $lb, $rcRow, $fname ) {
+			$dbw = $lb->getConnectionRef( DB_MASTER );
 			$dbw->insert( 'cu_changes', $rcRow, $fname );
 		} );
 
@@ -225,7 +269,19 @@ class CheckUserHooks {
 		list( $xff_ip, $isSquidOnly ) = self::getClientIPfromXFF( $xff );
 		// Get agent
 		$agent = $wgRequest->getHeader( 'User-Agent' );
-		$dbw = wfGetDB( DB_MASTER );
+		$services = MediaWikiServices::getInstance();
+		$contLang = $services->getContentLanguage();
+
+		$actiontext = wfMessage( $actiontext )->inContentLanguage()->text();
+
+		// (T199323) Truncate text fields prior to database insertion
+		// Attempting to insert too long text will cause an error in MariaDB/MySQL strict mode
+		$actionText = $contLang->truncateForDatabase( $actiontext, self::TEXT_FIELD_LENGTH );
+		$agent = $contLang->truncateForDatabase( $agent, self::TEXT_FIELD_LENGTH );
+		$xff = $contLang->truncateForDatabase( $xff, self::TEXT_FIELD_LENGTH );
+
+		$dbw = $services->getDBLoadBalancer()->getConnectionRef( DB_MASTER );
+
 		$rcRow = [
 			'cuc_page_id'    => 0,
 			'cuc_namespace'  => NS_USER,
@@ -233,7 +289,7 @@ class CheckUserHooks {
 			'cuc_minor'      => 0,
 			'cuc_user'       => $user->getId(),
 			'cuc_user_text'  => $user->getName(),
-			'cuc_actiontext' => wfMessage( $actiontext )->inContentLanguage()->text(),
+			'cuc_actiontext' => $actionText,
 			'cuc_comment'    => '',
 			'cuc_this_oldid' => 0,
 			'cuc_last_oldid' => 0,
@@ -287,10 +343,18 @@ class CheckUserHooks {
 		$agent = $wgRequest->getHeader( 'User-Agent' );
 		$userName = $user->getName();
 		$target = "[[User:$userName|$userName]]";
-		$msg = wfMessage( $msg );
-		$msg->params( $target );
+		$actionText = wfMessage( $msg )->params( $target )->inContentLanguage()->text();
 
-		$dbw = wfGetDB( DB_MASTER );
+		$services = MediaWikiServices::getInstance();
+		$contLang = $services->getContentLanguage();
+
+		// (T199323) Truncate text fields prior to database insertion
+		// Attempting to insert too long text will cause an error in MariaDB/MySQL strict mode
+		$actionText = $contLang->truncateForDatabase( $actionText, self::TEXT_FIELD_LENGTH );
+		$agent = $contLang->truncateForDatabase( $agent, self::TEXT_FIELD_LENGTH );
+		$xff = $contLang->truncateForDatabase( $xff, self::TEXT_FIELD_LENGTH );
+
+		$dbw = $services->getDBLoadBalancer()->getConnectionRef( DB_MASTER );
 		$rcRow = [
 			'cuc_page_id'    => 0,
 			'cuc_namespace'  => NS_USER,
@@ -298,7 +362,7 @@ class CheckUserHooks {
 			'cuc_minor'      => 0,
 			'cuc_user'       => 0,
 			'cuc_user_text'  => $ip,
-			'cuc_actiontext' => $msg->inContentLanguage()->text(),
+			'cuc_actiontext' => $actionText,
 			'cuc_comment'    => '',
 			'cuc_this_oldid' => 0,
 			'cuc_last_oldid' => 0,
