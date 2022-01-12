@@ -38,9 +38,15 @@ class CheckUserLogPager extends ReverseChronologicalPager {
 				'checkuser-log-entry-' . $row->cul_type,
 				$user,
 				$target,
-				$this->getLanguage()->timeanddate( wfTimestamp( TS_MW, $row->cul_timestamp ), true ),
-				$this->getLanguage()->date( wfTimestamp( TS_MW, $row->cul_timestamp ), true ),
-				$this->getLanguage()->time( wfTimestamp( TS_MW, $row->cul_timestamp ), true )
+				htmlspecialchars(
+					$this->getLanguage()->timeanddate( wfTimestamp( TS_MW, $row->cul_timestamp ), true )
+				),
+				htmlspecialchars(
+					$this->getLanguage()->date( wfTimestamp( TS_MW, $row->cul_timestamp ), true )
+				),
+				htmlspecialchars(
+					$this->getLanguage()->time( wfTimestamp( TS_MW, $row->cul_timestamp ), true )
+				)
 			)->text() .
 			Linker::commentBlock( $row->cul_reason ) .
 			'</li>';
