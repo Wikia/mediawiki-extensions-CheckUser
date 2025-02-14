@@ -2,12 +2,16 @@
 
 namespace MediaWiki\CheckUser\Services;
 
+use Fandom\Includes\Util\LoggerContextBuilder;
+use Fandom\Migration\Migration\MigrationService;
 use Job;
 use JobQueueGroup;
 use JobSpecification;
 use MediaWiki\CheckUser\CheckUserQueryInterface;
 use MediaWiki\CheckUser\Jobs\UpdateUserCentralIndexJob;
 use MediaWiki\Config\ServiceOptions;
+use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\User\CentralId\CentralIdLookup;
 use MediaWiki\User\TempUser\TempUserConfig;
 use MediaWiki\User\UserFactory;
@@ -242,7 +246,27 @@ class CheckUserCentralIndexManager implements CheckUserQueryInterface {
 		// Modify the 'rootJobTimestamp' to be the timestamp we are submitting, as this will ensure that the
 		// newest timestamp will be processed out of a bunch of duplicate jobs.
 		$jobParams['rootJobTimestamp'] = $timestamp;
-		$this->jobQueueGroup->push( new JobSpecification( UpdateUserCentralIndexJob::TYPE, $jobParams ) );
+
+		// Fandom-start: PLATFORM-10573 - run UpdateUserCentralIndexJob synchronously when migrating a wiki.
+		// TODO: This change should be reverted once we are done with mw139 -> mw143 migration
+		if ( MigrationService::isRunningInMigrationDaemon() ) {
+			try {
+				$job = new UpdateUserCentralIndexJob(null, $jobParams, MediaWikiServices::getInstance()->getConnectionProvider());
+				$job->run();
+			} catch ( \Exception $e ) {
+				LoggerFactory::getInstance( 'Migration' )
+					->error(
+						"Failed to execute UpdateUserCentralIndexJob",
+						LoggerContextBuilder::new()
+							->param( 'jobParams', $jobParams )
+							->exception( $e )
+							->build()
+					);
+			}
+		} else {
+			$this->jobQueueGroup->push(new JobSpecification(UpdateUserCentralIndexJob::TYPE, $jobParams));
+		}
+		// Fandom-end
 	}
 
 	/**
