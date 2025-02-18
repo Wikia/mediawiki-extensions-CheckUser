@@ -2,6 +2,10 @@
 
 namespace MediaWiki\CheckUser\Services;
 
+<<<<<<< Updated upstream
+=======
+use Fandom\Includes\Util\LoggerContextBuilder;
+>>>>>>> Stashed changes
 use Job;
 use JobQueueGroup;
 use JobSpecification;
@@ -242,7 +246,31 @@ class CheckUserCentralIndexManager implements CheckUserQueryInterface {
 		// Modify the 'rootJobTimestamp' to be the timestamp we are submitting, as this will ensure that the
 		// newest timestamp will be processed out of a bunch of duplicate jobs.
 		$jobParams['rootJobTimestamp'] = $timestamp;
+<<<<<<< Updated upstream
 		$this->jobQueueGroup->push( new JobSpecification( UpdateUserCentralIndexJob::TYPE, $jobParams ) );
+=======
+
+		// Fandom-start: PLATFORM-10573 - run UpdateUserCentralIndexJob synchronously when migrating a wiki.
+		// TODO: This change should be reverted once we are done with mw139 -> mw143 migration
+		if ( defined( 'RUN_MAINTENANCE_IF_MAIN' ) && isset( $_ENV['RUNNING_FROM_MIGRATOR_DAEMON'] ) ) {
+			try {
+				$job = new UpdateUserCentralIndexJob(null, $jobParams, MediaWikiServices::getInstance()->getConnectionProvider());
+				$job->run();
+			} catch ( \Exception $e ) {
+				LoggerFactory::getInstance( 'Migration' )
+					->error(
+						"Failed to execute UpdateUserCentralIndexJob",
+						LoggerContextBuilder::new()
+							->param( 'jobParams', $jobParams )
+							->exception( $e )
+							->build()
+					);
+			}
+		} else {
+			$this->jobQueueGroup->push(new JobSpecification(UpdateUserCentralIndexJob::TYPE, $jobParams));
+		}
+		// Fandom-end
+>>>>>>> Stashed changes
 	}
 
 	/**
