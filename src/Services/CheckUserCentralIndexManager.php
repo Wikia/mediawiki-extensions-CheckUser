@@ -3,7 +3,6 @@
 namespace MediaWiki\CheckUser\Services;
 
 use Fandom\Includes\Util\LoggerContextBuilder;
-use Fandom\Migration\Migration\MigrationService;
 use Job;
 use JobQueueGroup;
 use JobSpecification;
@@ -249,7 +248,7 @@ class CheckUserCentralIndexManager implements CheckUserQueryInterface {
 
 		// Fandom-start: PLATFORM-10573 - run UpdateUserCentralIndexJob synchronously when migrating a wiki.
 		// TODO: This change should be reverted once we are done with mw139 -> mw143 migration
-		if ( MigrationService::isRunningInMigrationDaemon() ) {
+		if ( defined( 'RUN_MAINTENANCE_IF_MAIN' ) && isset( $_ENV['RUNNING_FROM_MIGRATOR_DAEMON'] ) ) {
 			try {
 				$job = new UpdateUserCentralIndexJob(null, $jobParams, MediaWikiServices::getInstance()->getConnectionProvider());
 				$job->run();
