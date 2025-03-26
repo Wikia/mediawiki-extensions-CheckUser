@@ -63,19 +63,6 @@ class CheckUserPrivateEventsHandler implements
 	 * @param bool $autocreated
 	 */
 	public function onLocalUserCreated( $user, $autocreated ) {
-		// Don't add a private event if there will be an associated event in Special:RecentChanges,
-		// otherwise this will be a duplicate.
-		// The duplication would occur if the user was autocreated, $wgNewUserLog is true,
-		// and the 'newusers' log is not restricted.
-		$logRestrictions = $this->config->get( MainConfigNames::LogRestrictions );
-		if (
-			!$autocreated &&
-			$this->config->get( MainConfigNames::NewUserLog ) &&
-			!( array_key_exists( 'newusers', $logRestrictions ) && $logRestrictions['newusers'] !== '*' )
-		) {
-			return;
-		}
-
 		$this->checkUserInsert->insertIntoCuPrivateEventTable(
 			[
 				'cupe_namespace'  => NS_USER,
