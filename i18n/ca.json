@@ -30,7 +30,7 @@
 	"checkuserlog": "Registre del verificador de comptes d'usuari",
 	"checkuser-contribs": "comprova les IP de l'usuari",
 	"group-checkuser": "Verificadors de comptes d'usuari",
-	"group-checkuser-member": "CheckUser",
+	"group-checkuser-member": "{{GENDER:$1|verificador de comptes d'usuari|verificadora de comptes d'usuari}}",
 	"right-checkuser": "Comprovar les adreces IP i altra informació dels usuaris",
 	"right-checkuser-log": "Veure el registre del verificador de comptes d'usuari",
 	"grouppage-checkuser": "{{ns:project}}:Verificador de comptes d'usuari",
@@ -69,6 +69,7 @@
 	"checkuser-link-investigate-label": "Provi la nova eina CheckUser",
 	"checkuser-investigateblock-warning-confirmaction": "Si esteu segur que voleu fer-ho, marqueu el camp «{{int:checkuser-investigateblock-confirm-blocks-label}}» a la part inferior.",
 	"checkuser-investigate-tour-addusertargets-title": "Necessiteu més context?",
+	"checkuser-global-contributions": "Cerca a les contribucions globals",
 	"checkuser-tempaccount-reveal-ip-button-label": "Mostra IP",
 	"checkuser-tempaccount-reveal-ip-missing": "no disponible"
 }
