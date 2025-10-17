@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Cabal"
+			"Cabal",
+			"Kuldeepburjbhalaike"
 		]
 	},
 	"group-checkuser": "ਵਰਤੋਂਕਾਰਾਂ ਦੀ ਜਾਂਚ ਕਰੋ",
@@ -9,6 +10,7 @@
 	"checkuser-search-submit": "ਲੱਭੋ",
 	"checkuser-helper-user": "ਵਰਤੋਂਕਾਰ",
 	"checkuser-investigateblock": "ਵਰਤੋਂਕਾਰਾਂ 'ਤੇ ਪਾਬੰਦੀ ਲਾਓ",
+	"checkuser-investigate-subtitle-cancel-button-label": "ਰੱਦ ਕਰੋ",
 	"checkuser-investigate-tab-preliminary-check": "ਖਾਤਾ ਜਾਣਕਾਰੀ",
 	"checkuser-investigate-preliminary-table-header-editcount": "ਸੋਧ",
 	"checkuser-investigate-compare-table-button-contribs-label": "ਯੋਗਦਾਨ",

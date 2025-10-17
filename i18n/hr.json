@@ -18,7 +18,7 @@
 	"checkuser": "Provjeri suradnika",
 	"checkuserlog": "Evidencija provjere suradnika",
 	"checkuser-contribs": "provjeri suradničke IP adrese",
-	"checkuser-contribs-log": "evidencija nedavnih provjera",
+	"checkuser-contribs-log": "evidencija provjera",
 	"group-checkuser": "Provjeritelji",
 	"group-checkuser-member": "{{GENDER:$1|provjeritelj|provjeriteljica}}",
 	"right-checkuser": "Provjeravanje IP adrese suradnika i drugih informacija",
@@ -68,11 +68,14 @@
 	"checkuser-investigateblock-notice-append": "Dodaj na kraj stranice",
 	"checkuser-investigateblock-notice-prepend": "Dodaj stranici na početak",
 	"checkuser-investigateblock-notice-replace": "Zamijeni stranicu",
+	"checkuser-investigate-subtitle-cancel-button-label": "Odustani",
 	"checkuser-investigate-notice-no-results": "Nema rezultata.",
 	"checkuser-investigate-tab-preliminary-check": "Informacije o računu",
 	"checkuser-investigate-tab-compare": "Usporedi",
 	"checkuser-investigate-tab-timeline": "Vremenska crta",
 	"checkuser-investigate-targets-placeholder": "Suradničko ime ili 1.1.1.1",
+	"checkuser-investigate-duration-label": "Trajanje",
+	"checkuser-investigate-duration-option-all": "Sve",
 	"checkuser-investigate-preliminary-table-header-blocked": "Stanje",
 	"checkuser-investigate-preliminary-table-header-groups": "Skupine",
 	"checkuser-investigate-preliminary-table-cell-wiki-nowiki": "Wiki nije pronađen",
@@ -88,5 +91,7 @@
 	"checkuser-investigate-compare-table-header-username": "Suradničko ime",
 	"checkuser-investigate-tour-addusertargets-title": "Potrebnost širega konteksta?",
 	"checkuser-investigate-tour-filterip-title": "Sužavanje Vaše istrage?",
-	"prefs-checkuser-tempaccount": "Otkrivanje internetske adrese privremenih računa"
+	"checkuser-global-contributions": "Pretraživanje globalnih doprinosa",
+	"prefs-checkuser-tempaccount": "Otkrivanje internetske adrese privremenih računa",
+	"checkuser-tempaccount-enable-preference": "Omogući otkrivanje IP adresa za privremene račune"
 }

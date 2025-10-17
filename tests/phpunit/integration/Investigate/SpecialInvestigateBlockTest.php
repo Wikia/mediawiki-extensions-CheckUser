@@ -78,7 +78,12 @@ class SpecialInvestigateBlockTest extends FormSpecialPageTestCase {
 		$this->assertStringContainsString( '(checkuser-investigateblock-reason', $html );
 		// Verify that the 'Options' section is shown
 		$this->assertStringContainsString( '(checkuser-investigateblock-options', $html );
-		$this->assertStringContainsString( '(checkuser-investigateblock-notice-user-page-label', $html );
+		if ( $this->isSocialProfileExtensionInstalled() ) {
+			$this->assertStringNotContainsString( '(checkuser-investigateblock-notice-user-page-label', $html );
+		} else {
+			$this->assertStringContainsString( '(checkuser-investigateblock-notice-user-page-label', $html );
+
+		}
 		$this->assertStringContainsString( '(checkuser-investigateblock-notice-talk-page-label', $html );
 		// Assert that the 'Confirm blocks' checkbox is not shown (this should only be shown after the form is submitted
 		// and a warning is to be shown).
@@ -98,7 +103,32 @@ class SpecialInvestigateBlockTest extends FormSpecialPageTestCase {
 		$this->assertStringContainsString( '(checkuser-investigateblock-warning-users-truncated', $html );
 	}
 
+	/**
+	 * Using the wAvatar class existence check as a proxy because as of
+	 * early April 2025 SocialProfile lacks an extension.json entry point, which
+	 * thus prevents using ExtensionRegistry to check if SP is installed.
+	 *
+	 * @return bool
+	 */
+	private function isSocialProfileExtensionInstalled(): bool {
+		return class_exists( 'wAvatar' );
+	}
+
+	/**
+	 * SocialProfile user pages do not use wikitext and therefore block attempts to edit them using the API,
+	 * so Special:InvestigateBlock does not work when SocialProfile is installed. We need to skip the tests
+	 * to avoid failures in CI.
+	 *
+	 * @return void
+	 */
+	private function markTestSkippedIfSocialProfileExtensionInstalled() {
+		if ( $this->isSocialProfileExtensionInstalled() ) {
+			$this->markTestSkipped( "Extension SocialProfile cannot be installed when running this test (T390590)" );
+		}
+	}
+
 	public function testOnSubmitOneUserTargetWithNotices() {
+		$this->markTestSkippedIfSocialProfileExtensionInstalled();
 		// Set-up the valid request and get a test user which has the necessary rights.
 		$testPerformer = $this->getUserForSuccess();
 		RequestContext::getMain()->setUser( $testPerformer );
@@ -123,6 +153,7 @@ class SpecialInvestigateBlockTest extends FormSpecialPageTestCase {
 		[ $html ] = $this->executeSpecialPage( '', $fauxRequest, null, $testPerformer );
 		// Assert that the success message is shown.
 		$this->assertStringContainsString( '(checkuser-investigateblock-success', $html );
+		$this->assertStringNotContainsString( '(checkuser-investigateblock-notices-failed', $html );
 
 		// Assert that the user is blocked
 		$block = $this->getServiceContainer()->getDatabaseBlockStore()->newFromTarget( $testTargetUser );
@@ -157,6 +188,7 @@ class SpecialInvestigateBlockTest extends FormSpecialPageTestCase {
 	}
 
 	public function testOnSubmitForIPTargetsWithFailedNotices() {
+		$this->markTestSkippedIfSocialProfileExtensionInstalled();
 		ConvertibleTimestamp::setFakeTime( '20210405060708' );
 		$testPerformer = $this->getUserForSuccess();
 		RequestContext::getMain()->setUser( $testPerformer );
