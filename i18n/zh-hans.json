@@ -50,7 +50,10 @@
 			"铁桶",
 			"WiiUf",
 			"Kichin",
-			"Dabao qian"
+			"Dabao qian",
+			"Peterxy12",
+			"范",
+			"Libamidi"
 		]
 	},
 	"checkuser-summary": "本工具会从最近更改中获取某个用户使用过的IP地址，或者显示某个IP地址下的编辑/用户。\n可在IP地址后方附加“/xff”以使用XFF头信息来获取同一客户端IP地址下的用户和编辑。支持IPv4（CIDR $1-32）和IPv6（CIDR $2-128）。\n由于性能问题，本工具最多返回$3笔最近编辑信息。\n请确保您的操作符合方针。",
@@ -304,9 +307,9 @@
 	"checkuser-global-contributions-results-title": "$1的全域用户贡献",
 	"prefs-checkuser-tempaccount": "临时账号IP显示",
 	"checkuser-tempaccount-enable-preference-description": "使用此工具时，请确保您的行为符合政策规定。",
-	"checkuser-tempaccount-enable-preference": "为临时账号启用显示IP地址",
+	"checkuser-tempaccount-enable-preference": "启用显示临时账号的IP地址",
 	"checkuser-tempaccount-no-ip-results": "没有此临时用户最近$1{{PLURAL:$1|天}}的IP数据",
-	"checkuser-tempaccount-reveal-ip-button-label": "显示 IP",
+	"checkuser-tempaccount-reveal-ip-button-label": "显示IP",
 	"checkuser-tempaccount-reveal-ip-missing": "不可用",
 	"checkuser-tempaccount-reveal-ip-error": "错误",
 	"checkuser-tempaccount-specialblock-ips": "此为使用以下{{PLURAL:$1|IP}}的临时用户：$2",

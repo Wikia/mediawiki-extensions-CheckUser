@@ -19,7 +19,10 @@
 			"ديفيد",
 			"علاء",
 			"محمد أحمد عبد الفتاح",
-			"Cigaryno"
+			"Cigaryno",
+			"BAB ZAA",
+			"Mohammed Qays",
+			"Hubaishan"
 		]
 	},
 	"checkuser-summary": "* تفحص هذه الأداة أحدث التغييرات بهدف استرجاع عنوان البروتوكول المُستخدم بواسطة مستخدم ما أو بهدف إظهار تعديلات/بيانات عنوان البروتوكول.\n* المستخدمون والتعديلات التي تتم بواسطة عنوان بروتوكول العميل يمكن استرجاعها من خلال رؤوس XFF، وذلك عبر إلحاق \"/xff\" في نهاية عنوان البروتوكول. يدعم عناوين بروتوكولات الإصدار الرابع (CIDR $1-32) وبروتوكولات الإصدار السادس (CIDR $2-128).\n* لن تعرض الأداة أكثر من $3 تعديل لأسباب تتعلق بالأداء.\n* استخدم هذه الأداة وفقًا للسياسات.",
@@ -181,7 +184,7 @@
 	"checkuser-investigate": "فحص",
 	"checkuser-investigate-page-subtitle": "التحقيق الحالي حول $1",
 	"checkuser-investigate-subtitle-block-accounts-button-label": "منع الحسابات",
-	"checkuser-investigate-subtitle-block-ips-button-label": "حظر عناوين IP",
+	"checkuser-investigate-subtitle-block-ips-button-label": "منع عناوين IP",
 	"checkuser-investigate-subtitle-cancel-button-label": "إلغاء",
 	"checkuser-investigate-subtitle-continue-button-label": "استمرار",
 	"checkuser-investigate-indicator-new-investigation": "تحقق جديد",
@@ -258,7 +261,7 @@
 	"checkuser-ip-contributions-tab-label-contributions": "المساهمات",
 	"checkuser-ip-contributions-tab-label-archive-contributions": "مساهمات المستخدم المحذوفة",
 	"checkuser-ip-contributions-search-form-wrapper": "بحث عن مساهمات IP",
-	"checkuser-ip-contributions-results-title": "مساهمات IP للمستخدم المؤقت مقابل $1",
+	"checkuser-ip-contributions-results-title": "مساهمات عنوان الآيبي للحساب المؤقت مقابل $1",
 	"checkuser-ip-contributions-archive-results-title": "تم حذف مساهمات IP للمستخدم المؤقت مقابل $1",
 	"checkuser-ip-contributions-deleted-contributions-link": "مساهمات المستخدم المحذوفة",
 	"checkuser-ip-contributions-contributions-link": "مساهمات",
@@ -273,7 +276,7 @@
 	"checkuser-tempaccount-enable-preference-description": "عند استخدام هذه الأداة، يجب عليك التأكد من أنك تفعل ذلك ضمن السياسة.",
 	"checkuser-tempaccount-enable-preference": "تفعيل كشف عنوان بروتوكول الإنترنت للحسابات المؤقتة",
 	"checkuser-tempaccount-no-ip-results": "لا توجد بيانات IP لهذا المستخدم المؤقت لآخر $1 {{PLURAL:$1| يوم | أيام}}",
-	"checkuser-tempaccount-reveal-ip-button-label": "اعرض عنوان بروتوكول الإنترنت",
+	"checkuser-tempaccount-reveal-ip-button-label": "عرض عنوان بروتوكول الإنترنت",
 	"checkuser-tempaccount-reveal-ip-missing": "غير متاح",
 	"checkuser-tempaccount-reveal-ip-error": "خطأ",
 	"checkuser-tempaccount-specialblock-ips": "هذا مستخدم مؤقت يستخدم ما يلي {{PLURAL:$1| IP | IPs}}: $2",
